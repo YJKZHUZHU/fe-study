@@ -1,0 +1,283 @@
+<!--
+ * @Author: 豆芽
+ * @Date: 2021-08-30 11:10:45
+ * @LastEditTime: 2021-09-01 17:30:36
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /fe-study/src/2021/08/30/index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="./f2-all.js"></script>
+
+  <!-- <script src="https://gw.alipayobjects.com/os/lib/antv/f2/3.7.0/dist/f2-all.min.js"></script> -->
+</head>
+
+<body>
+  <div style="display: flex;justify-content: center;margin-top: 200px;">
+    <canvas id="myChart" width="350" height="260" style="background-color: #000001;"></canvas>
+  </div>
+</body>
+<script>
+  const addZero = (num) => +num <= 9 ? `0${num}` : String(num)
+
+  const wrapPoint = (source) => {
+    if (source > 40) return '#FF293A' // 高温
+    if (source < 0) return '#3597FF' //低温
+    return '#00CC49' // 正常
+  }
+
+  function Random(min, max) {
+    return Math.round(Math.random() * (max - min)) + min;
+  }
+  const generateNum = () => {
+    return {
+      temperature: [Random(-100, 100), Random(-100, 100)].sort(),
+      humidity: [Random(0, 100), Random(0, 100)].sort()
+    }
+  }
+  const generateData = (length, type = 'temperature') => {
+    const initArr = Array.from({ length }, (item, index) => index + 1)
+    return initArr.map(item => {
+      const value = generateNum()[type]
+      return {
+        time: addZero(item),
+        value,
+        low: value[0],
+        high: value[1]
+      }
+    })
+  }
+  // F2 对数据源格式的要求，仅仅是 JSON 数组，数组的每个元素是一个标准 JSON 对象。
+  const data = generateData(60, 'temperature');
+  // Step 1: 创建 Chart 对象
+  const chart = new F2.Chart({
+    id: 'myChart',
+    padding: [80, 'auto', 'auto', 'auto'],
+    pixelRatio: window.devicePixelRatio // 指定分辨率
+  });
+
+
+  // Step 2: 载入数据源
+  chart.source(data, {
+    time: {
+      tickCount: 5,
+      values: Array.from({ length: 30 }, (item, index) => addZero(index + 1))
+    }
+  });
+
+  console.log('chart', chart)
+
+
+
+  // chart.tooltip({
+  //   alwaysShow: true,
+  //   snap:true,
+  //   offsetY: 0,
+  //   showTooltipMarker: true,
+  //   showTitle: true,
+  //   showItemMarker: false,
+  //   showCrosshairs: true,
+  //   background: {
+  //     radius: 6,
+  //     fill: 'red',
+  //     padding: [6, 10],
+  //   },
+  //   titleStyle: {
+  //     fontSize: 12,
+  //     fill: 'rgba(255, 255, 255, 1)',
+  //   },
+  //   valueStyle: {
+  //     fontSize: 16,
+  //     fill: '#fff',
+  //     borderTopWidth: 2,
+  //     borderTopColor: '#000',
+  //   },
+  //   crosshairsStyle: {
+  //     stroke: 'red',
+  //     lineDash: [3]
+  //   },
+  //   onShow: function onShow(ev) {
+  //     var items = ev.items;
+  //     items[0].name = '';
+  //     items[0].value = items[0].value + 'C';
+  //     if(items[1]){
+  //       items[1].name='';
+  //       items[1].value=' ';
+  //     }
+  //   }
+  // });
+
+
+  // chart.tooltip(false); // 关闭 tooltip
+  chart.tooltip({
+    snap: true,
+    alwaysShow: true, // 当移出触发区域，是否仍显示提示框内容，默认为 false，移出触发区域 tooltip 消失，设置为 true 可以保证一直显示提示框内容
+    // offsetX: 0, // x 方向的偏移
+    offsetY: 0, // y 方向的偏移
+    triggerOn: ['touchstart'], // tooltip 出现的触发行为，可自定义，用法同 legend 的 triggerOn
+    triggerOff: 'touchend', // 消失的触发行为，可自定义
+    showTitle: true, // 是否展示标题，默认不展示
+    showCrosshairs: true, // 是否显示辅助线，点图、路径图、线图、面积图默认展示
+    crosshairsStyle: {
+      stroke: '#2C2C2E',
+      lineWidth: [1]
+    }, // 配置辅助线的样式
+    showTooltipMarker: true, // 是否显示 tooltipMarker
+    tooltipMarkerStyle: {
+      fill: '#2C2C2E' // 设置 tooltipMarker 的样式
+    },
+    background: {
+      radius: 6,
+      fill: '#2C2C2E',
+      padding: [6, 10],
+    }, // tooltip 内容框的背景样式
+    titleStyle: {
+      fontSize: 12,
+      fill: 'rgba(255, 255, 255, 1)',
+    }, // tooltip 标题的文本样式配置，showTitle 为 false 时不生效
+    nameStyle: {
+      fontSize: 24,
+      fill: '#fff',
+      textAlign: 'start',
+      textBaseline: 'middle'
+    }, // tooltip name 项的文本样式配置
+    valueStyle: {
+      fontSize: 12,
+      fill: '#fff',
+      borderTopWidth: 2,
+      borderTopColor: '#000',
+    }, // tooltip value 项的文本样式配置
+    showItemMarker: false, // 是否展示每条记录项前面的 marker
+    itemMarkerStyle: {
+      radius: 7,
+      symbol: 'circle',
+      lineWidth: 2,
+      stroke: '#fff'
+    }, // 每条记录项前面的 marker 的样式配置
+    custom: false, // 是否自定义 tooltip 提示框
+    onShow: function onShow(ev) {
+      console.log('ev', ev)
+      // var items = ev.items;
+      // items[0].name = '';
+      // items[0].value = items[0].value + 'C';
+      // if (items[1]) {
+      //   items[1].name = '';
+      //   items[1].value = ' ';
+      // }
+    },// tooltip 显示时的回调函数
+    onHide(obj) {
+      // obj: { x, y, title, items }
+    }, // tooltip 隐藏时的回调函数
+    onChange(obj) {
+      // obj: { x, y, title, items }
+    }, // tooltip 内容发生改变时的回调函数
+    crosshairsType: 'y', // 辅助线的种类
+    showXTip: false, // 是否展示 X 轴的辅助信息
+    showYTip: false, // 是否展示 Y 轴的辅助信息
+    // xTip: { Object } / { Function }, // X 轴辅助信息的文本样式
+    // yTip: { Object } / {
+    //   Function, // Y 轴辅助信息的文本样式
+    //   xTipBackground: { Object }, // X 轴辅助信息的背景框样式
+    //   yTipBackground: { Object }, // Y 轴辅助信息的背景框样式  
+    //   snap: { Boolean } // 是否将辅助线准确定位至数据点
+    // }
+  })
+
+
+
+
+
+  chart.axis('time', {
+    tickLine: null,
+    line: null,
+    label: {
+      fill: '#393939'
+    },
+  });
+  chart.axis('value', {
+    label: {
+      fill: '#393939',
+      stroke: '#393939',
+    },
+    grid: {
+      fill: '#393939',
+      stroke: '#393939',
+    },
+    position: 'right',
+  });
+
+  chart.axis('low', {
+    label: {
+      fill: '#393939',
+      stroke: '#393939',
+    },
+    grid: {
+      fill: '#393939',
+      stroke: '#393939',
+    },
+    position: 'right',
+  });
+  chart.axis('high', {
+    label: {
+      fill: '#393939',
+      stroke: '#393939',
+    },
+    grid: {
+      fill: '#393939',
+      stroke: '#393939',
+    },
+    position: 'right',
+  });
+
+
+  // Step 3：创建图形语法，绘制柱状图，由 genre 和 sold 两个属性决定图形位置，genre 映射至 x 轴，sold 映射至 y 轴
+  chart
+    .interval()
+    .position('time*value')
+    .style({
+      lineWidth: 1,
+      fill: '#343437',
+      // stroke: '#00CC49'
+    })
+
+
+
+
+  chart
+    .point({})
+    .position('time*low')
+    .shape('circle')
+    .size('2')
+    .color('low', wrapPoint)
+
+  chart
+    .point({})
+    .position('time*high')
+    .shape('circle')
+    .size('2')
+    .color('high', wrapPoint)
+
+  // 定义进度条
+  chart.scrollBar({
+    mode: 'x',
+    // xStyle: { //隐藏滚动条
+    //   backgroundColor: '#e8e8e8',
+    //   fillerColor: '#808080',
+    //   offsetY: -2
+    // }
+  });
+  chart.interaction('pan');
+
+  // Step 4: 渲染图表
+  chart.render();
+
+</script>
+
+</html>

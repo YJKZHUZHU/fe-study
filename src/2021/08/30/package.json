@@ -1,0 +1,15 @@
+{
+  "name": "30",
+  "version": "1.0.0",
+  "description": "",
+  "main": "f2.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@antv/f2": "^3.8.9"
+  }
+}

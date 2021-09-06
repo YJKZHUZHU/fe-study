@@ -1,0 +1,279 @@
+<!--
+ * @Author: 豆芽
+ * @Date: 2021-08-30 11:10:45
+ * @LastEditTime: 2021-08-30 20:45:43
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: /fe-study/src/2021/08/30/index.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="./f2-all.js"></script>
+
+  <!-- <script src="https://gw.alipayobjects.com/os/lib/antv/f2/3.7.0/dist/f2-all.min.js"></script> -->
+</head>
+
+<body>
+  <div style="display: flex;justify-content: center;margin-top: 200px;">
+    <canvas id="container" width="400" height="260"></canvas>
+  </div>
+</body>
+<!-- <script>
+  const addZero = (num) => +num < 9 ? `0${num}` : String(num)
+  const generateNum = () => {
+    return {
+      temperature: [Math.round(Math.random() * -99 - 1), Math.round(Math.random() * 99 + 1)],
+      humidity: [Math.round(Math.random() * 99 + 1), Math.round(Math.random() * 99 + 1)]
+    }
+  }
+  const generateData = (length, type = 'temperature') => {
+    const initArr = Array.from({ length }, (item, index) => index + 1)
+    return initArr.map(item => ({
+      time: addZero(item),
+      value: generateNum()[type]
+    }))
+  }
+  // F2 对数据源格式的要求，仅仅是 JSON 数组，数组的每个元素是一个标准 JSON 对象。
+  const data = generateData(30, 'temperature');
+  console.log(data)
+  // Step 1: 创建 Chart 对象
+  const chart = new F2.Chart({
+    id: 'myChart',
+    pixelRatio: window.devicePixelRatio // 指定分辨率
+  });
+
+  // Step 2: 载入数据源
+  chart.source(data, {
+    time: {
+      tickCount: 5,
+      values: ['00', '01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12', '13', '14', '15', '16', '17'],
+    }
+  });
+
+  console.log('chart', chart)
+
+
+
+  // chart.tooltip({
+  //   alwaysShow: true,
+  //   snap:true,
+  //   offsetY: 0,
+  //   showTooltipMarker: true,
+  //   showTitle: true,
+  //   showItemMarker: false,
+  //   showCrosshairs: true,
+  //   background: {
+  //     radius: 6,
+  //     fill: 'red',
+  //     padding: [6, 10],
+  //   },
+  //   titleStyle: {
+  //     fontSize: 12,
+  //     fill: 'rgba(255, 255, 255, 1)',
+  //   },
+  //   valueStyle: {
+  //     fontSize: 16,
+  //     fill: '#fff',
+  //     borderTopWidth: 2,
+  //     borderTopColor: '#000',
+  //   },
+  //   crosshairsStyle: {
+  //     stroke: 'red',
+  //     lineDash: [3]
+  //   },
+  //   onShow: function onShow(ev) {
+  //     var items = ev.items;
+  //     items[0].name = '';
+  //     items[0].value = items[0].value + 'C';
+  //     if(items[1]){
+  //       items[1].name='';
+  //       items[1].value=' ';
+  //     }
+  //   }
+  // });
+
+
+
+  // chart.scale({
+  //   time: {
+
+  //   },
+  //   value: {
+  //     nice: true,
+  //     // min: ${JSON.stringify(minValue)},
+  //     // max:${JSON.stringify(maxValue)},
+  //     // ...${JSON.stringify(tickCountObj)}
+  //   }
+  // });
+  chart.axis('time', {
+    tickLine: {
+      length: 4,
+      stroke: '#cacaca'
+    },
+    label: {
+      fill: '#cacaca'
+    },
+    line: {
+      top: true
+    }
+  });
+  chart.axis('value', {
+    label: {
+      fill: '#495054',
+      opacity: 0.35
+    },
+    position: 'left',
+  });
+
+
+  // Step 3：创建图形语法，绘制柱状图，由 genre 和 sold 两个属性决定图形位置，genre 映射至 x 轴，sold 映射至 y 轴
+  chart.interval().position('time*value').style({
+    lineWidth: 1,
+    // stroke: 'red'
+  });;
+
+  chart.point().position('time*value').style({
+    lineWidth: 1,
+    stroke: 'red'
+  });
+  // chart.interaction('pan');
+  // 定义进度条
+  chart.scrollBar({
+    mode: 'x',
+    xStyle: {
+      backgroundColor: '#e8e8e8',
+      fillerColor: '#808080',
+      offsetY: -2
+    }
+  });
+  chart.interaction('pan');
+
+
+  // Step 4: 渲染图表
+  chart.render();
+
+</script> -->
+<script>
+
+  function formatNumber(n) {
+    return String(Math.floor(n * 100) / 100).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  fetch('https://gw.alipayobjects.com/os/antfincdn/ZpWsTPpY6%26/steps.json')
+    .then(res => res.json())
+    .then(data => {
+      const originDates = [];
+      const originSteps = [];
+      const firstDayArr = [];
+      data.forEach(function (obj) {
+        if (obj.date >= '2018-05-01') {
+          originDates.push(obj.date);
+          originSteps.push(obj.steps);
+        }
+
+        if (obj.first) {
+          firstDayArr.push(obj);
+        }
+      });
+
+      const chart = new F2.Chart({
+        id: 'container',
+        pixelRatio: window.devicePixelRatio
+      });
+
+      chart.source(data, {
+        date: {
+          type: 'timeCat',
+          tickCount: 5,
+          values: originDates,
+          mask: 'MM-DD'
+        },
+        steps: {
+          tickCount: 5
+        }
+      });
+
+      chart.axis('date', {
+        tickLine: {
+          length: 4,
+          stroke: '#cacaca'
+        },
+        label: {
+          fill: '#cacaca'
+        },
+        line: {
+          top: true
+        }
+      });
+      chart.axis('steps', {
+        position: 'right',
+        label: function label(text) {
+          return {
+            text: formatNumber(text * 1),
+            fill: '#cacaca'
+          };
+        },
+
+        grid: {
+          stroke: '#d1d1d1'
+        }
+      });
+      chart.tooltip({
+        showItemMarker: false,
+        background: {
+          radius: 2,
+          padding: [3, 5]
+        },
+        onShow: function onShow(ev) {
+          const items = ev.items;
+          items[0].name = '';
+          items[0].value = items[0].value + ' 步';
+        }
+      });
+      chart.interval().position('date*steps').style({
+        radius: [2, 2, 0, 0]
+      });
+
+      firstDayArr.forEach(function (obj) {
+        chart.guide().line({
+          top: false,
+          start: [obj.date, 'min'],
+          end: [obj.date, 'max'],
+          style: {
+            lineWidth: 1,
+            stroke: '#A4A4A4'
+          }
+        });
+        chart.guide().text({
+          position: [obj.date, 'max'],
+          content: obj.date,
+          style: {
+            textAlign: 'start',
+            fill: '#cacaca',
+            textBaseline: 'top'
+          },
+          offsetX: 5,
+          offsetY: 5
+        });
+      });
+      // 定义进度条
+      chart.scrollBar({
+        mode: 'x',
+        xStyle: {
+          backgroundColor: '#e8e8e8',
+          fillerColor: '#808080',
+          offsetY: -2
+        }
+      });
+      chart.interaction('pan');
+      chart.render();
+    });
+</script>
+
+</html>
