@@ -1,7 +1,7 @@
 <!--
  * @Author: 豆芽
  * @Date: 2021-08-30 11:10:45
- * @LastEditTime: 2021-09-01 17:30:36
+ * @LastEditTime: 2021-09-16 20:19:13
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: /fe-study/src/2021/08/30/index.html
@@ -252,17 +252,20 @@
 
   chart
     .point({})
-    .position('time*low')
+    .position('time*value[0]')
     .shape('circle')
     .size('2')
     .color('low', wrapPoint)
 
   chart
     .point({})
-    .position('time*high')
+    .position('time*value[1]')
     .shape('circle')
     .size('2')
     .color('high', wrapPoint)
+
+  
+
 
   // 定义进度条
   chart.scrollBar({
