@@ -19,6 +19,10 @@ function removeDuplicates(nums: number[]): number {
   return j+1
 }
 
+function getList() {
+  console.log('111wefwefcecwc牛啊牛啊')
+}
+
 console.log(removeDuplicates([1,2,3,4,1,2,1]))
 
 
